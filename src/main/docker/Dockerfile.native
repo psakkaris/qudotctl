@@ -1,0 +1,35 @@
+####
+# This Dockerfile is used in order to build a container that runs the Quarkus application in native (no JVM) mode.
+#
+# Before building the container image run:
+#
+# ./mvnw package -Pnative
+# To build with container and not rely on local graalvmm or mandrel
+# ./mvnw package -Pnative -Dquarkus.native.container-build=true
+#
+# Then, build the image with:
+#
+# podman build -f src/main/docker/Dockerfile.native -t psakkaris/qudotctl .
+#
+# Then run the container using:
+#
+# podman run -i --rm psakkaris/qudotctl
+#
+###
+FROM registry.fedoraproject.org/fedora-minimal:36
+RUN microdnf install -y yum-utils
+RUN yum-config-manager --add-repo https://yum.repos.intel.com/setup/intelproducts.repo
+RUN microdnf install -y intel-mkl-64bit
+RUN microdnf install -y boost-1.76.0-9.fc36
+ENV LD_LIBRARY_PATH=/opt/intel/mkl/lib/intel64_lin:/opt/intel/tbb/lib/intel64_lin/gcc4.7/:/usr/lib64
+WORKDIR /work/
+RUN chown 1001 /work \
+    && chmod "g+rwX" /work \
+    && chown 1001:root /work
+COPY --chown=1001:root target/*-runner /work/application
+COPY --chown=1001:root tools/qudotvm /work/qudotvm
+COPY --chown=1001:root tools/qudotc /work/qudotc
+
+USER 1001
+
+ENTRYPOINT ["./application"]
