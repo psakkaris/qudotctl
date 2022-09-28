@@ -1,4 +1,4 @@
-package com.sakkaris.qudotctl.models;
+package io.qudot.qudotctl.models;
 
 import io.quarkus.runtime.annotations.RegisterForReflection;
 

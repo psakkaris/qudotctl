@@ -1,4 +1,4 @@
-package com.sakkaris.qudotctl;
+package io.qudot.qudotctl;
 
 import io.quarkus.picocli.runtime.annotations.TopCommand;
 import picocli.CommandLine.Command;

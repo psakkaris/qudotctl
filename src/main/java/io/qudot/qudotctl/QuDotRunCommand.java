@@ -1,9 +1,9 @@
-package com.sakkaris.qudotctl;
+package io.qudot.qudotctl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.sakkaris.qudotctl.models.QuDotResult;
-import com.sakkaris.qudotctl.models.QuDotResults;
+import io.qudot.qudotctl.models.QuDotResult;
+import io.qudot.qudotctl.models.QuDotResults;
 import org.apache.commons.io.IOUtils;
 import picocli.CommandLine;
 
