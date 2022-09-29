@@ -51,7 +51,7 @@ public class QuDotRunCommand {
      * @throws IOException
      * @throws InterruptedException
      */
-    private int compileAndExecuteQuDot(String jobId, String filename) throws IOException, InterruptedException {
+    int compileAndExecuteQuDot(String jobId, String filename) throws IOException, InterruptedException {
         String compiledFiledName = String.format(qudotFilePattern, jobId, jobId, QUDOT_BYTCODE_EXT);
         // /bin/sh -c "./qudotc tmpjob01/bell.qudot -o tmpjob01/"
         var compileCommand = String.format("./qudotc %s -o %s/", filename, jobId);
@@ -70,10 +70,22 @@ public class QuDotRunCommand {
      * @return QuDotResults
      * @throws IOException when file doesn't exist
      */
-    private QuDotResults toQuDotResults(String jobId) throws IOException {
+    QuDotResults toQuDotResults(String jobId) throws IOException {
         String outFilename = String.format(qudotFilePattern, jobId, jobId, QUDOT_OUTFILE_EXT);
         FileInputStream fis = new FileInputStream(outFilename);
-        var outputLines = IOUtils.readLines(fis, StandardCharsets.UTF_8);
+
+        return toQuDotResults(jobId, fis);
+    }
+
+    /**
+     * Parses QuDotVM output file given an inputstream
+     * @param jobId the jobId
+     * @param inputStream the file to qudotvm output results
+     * @return QuDotResults
+     * @throws IOException on file errors
+     */
+    QuDotResults toQuDotResults(String jobId, InputStream inputStream) throws IOException {
+        var outputLines = IOUtils.readLines(inputStream, StandardCharsets.UTF_8);
         List<QuDotResult> resultItems = new ArrayList<>();
         for (int i=1; i < outputLines.size(); i++) {
             resultItems.add(toQuDotResult(outputLines.get(i)));
@@ -92,7 +104,7 @@ public class QuDotRunCommand {
      * @param outputLine a single line of csv output
      * @return QuDotResult
      */
-    private QuDotResult toQuDotResult(String outputLine) {
+    QuDotResult toQuDotResult(String outputLine) {
         var fields = outputLine.split(",");
         if (fields.length == 3) {
             return new QuDotResult(fields[0], Long.parseLong(fields[1]), Double.parseDouble(fields[2]));
