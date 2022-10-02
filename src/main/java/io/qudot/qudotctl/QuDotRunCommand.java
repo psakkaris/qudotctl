@@ -58,7 +58,7 @@ public class QuDotRunCommand {
         // /bin/sh -c "./qudotvm tmpjob01/bell.qudotc"
         var vmCommand = String.format("./qudotvm %s", compiledFiledName);
         String command = String.join(";", compileCommand, vmCommand);
-        System.out.println("Running: " + command);
+        //System.out.println("Running: " + command);
         Process process = new ProcessBuilder("/bin/sh", "-c", command).start();
 
         return process.waitFor();
