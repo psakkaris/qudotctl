@@ -6,4 +6,6 @@ public interface JobService {
     String generateJobId();
 
     void compileJob(String qudotFile, String jobId) throws IOException;
+
+    void submitJob();
 }
