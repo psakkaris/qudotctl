@@ -7,5 +7,5 @@ public interface JobService {
 
     void compileJob(String qudotFile, String jobId) throws IOException;
 
-    void submitJob();
+    void submitJob(String jobId);
 }

@@ -47,10 +47,24 @@ public class JobServiceExecutorImpl implements JobService {
     }
 
     @Override
-    public void submitJob() {
+    public void submitJob(final String jobId) {
+
         jobExecutorService.execute(() -> {
-            System.out.println("HELLO JOB SUBMIT!");
+            try {
+                String compiledFiledName = getCompiledFilename(jobId);
+                var vmCommand = String.format("%s/qudotvm %s", qudotHome, compiledFiledName);
+                LOG.infof("running: %s", vmCommand);
+                Process process = new ProcessBuilder("/bin/sh", "-c", vmCommand).start();
+                int exitCode = process.waitFor();
+                LOG.infof("qudotvm exit code: %s", exitCode);
+            } catch (IOException | InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         });
+    }
+
+    private String getCompiledFilename(String jobId) {
+        return String.format("/tmp/qudotctl/%s/%s.qudotc", jobId, jobId);
     }
 
 }

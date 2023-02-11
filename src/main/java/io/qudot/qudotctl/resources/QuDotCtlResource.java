@@ -61,21 +61,15 @@ public class QuDotCtlResource {
             jobService.compileJob(filename, jobId);
             var qudotJob = new QuDotJob();
             qudotJob.setJobId(jobId);
+
+            LOG.infof("Starting job: %s", jobId);
+            jobService.submitJob(jobId);
             return Response.ok(qudotJob).build();
         } catch (IOException e) {
             e.printStackTrace();
             throw new WebApplicationException(e.getMessage());
         }
     }
-
-
-    @POST
-    @Path("/jobs/test")
-    public Response testSubmit() {
-        jobService.submitJob();
-        return Response.ok().build();
-    }
-
 
 
     String getJobPath(String jobId) {
