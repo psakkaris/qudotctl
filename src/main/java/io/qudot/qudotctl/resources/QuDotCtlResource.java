@@ -20,7 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Base64;
 
-@Path("/v1/qudotctl")
+@Path("/qudotctl/v1")
 public class QuDotCtlResource {
 
     @ConfigProperty(name = "qudotctl.version")
