@@ -20,7 +20,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Base64;
 
-@Path("/qudotctl")
+@Path("/v1/qudotctl")
 public class QuDotCtlResource {
 
     @ConfigProperty(name = "qudotctl.version")
@@ -63,6 +63,16 @@ public class QuDotCtlResource {
             throw new WebApplicationException(e.getMessage());
         }
     }
+
+
+    @POST
+    @Path("/jobs/test")
+    public Response testSubmit() {
+        jobService.submitJob();
+        return Response.ok().build();
+    }
+
+
 
     String getJobPath(String jobId) {
         return String.format("%s/qudotctl/%s", jobWorkDir, jobId);

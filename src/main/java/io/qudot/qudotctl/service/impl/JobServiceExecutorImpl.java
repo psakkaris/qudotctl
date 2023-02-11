@@ -3,32 +3,29 @@ package io.qudot.qudotctl.service.impl;
 import io.qudot.qudotctl.service.JobService;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
-import org.jobrunr.configuration.JobRunr;
-import org.jobrunr.scheduling.BackgroundJob;
-import org.jobrunr.scheduling.JobScheduler;
-import org.jobrunr.storage.InMemoryStorageProvider;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import java.io.IOException;
 import java.util.UUID;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @ApplicationScoped
-public class JobServiceJobrunrImpl implements JobService {
-    private static final Logger LOG = Logger.getLogger(JobServiceJobrunrImpl.class);
+public class JobServiceExecutorImpl implements JobService {
+    private static final Logger LOG = Logger.getLogger(JobServiceExecutorImpl.class);
+    private static final int CONCURRENT_JOB_MAX = 5;
     @ConfigProperty(name = "QUDOT_HOME")
     String qudotHome;
 
-    JobScheduler jobScheduler;
+    ExecutorService jobExecutorService;
+
     @PostConstruct
     public void init() {
-        var result = JobRunr.configure()
-                .useStorageProvider(new InMemoryStorageProvider())
-                .useBackgroundJobServer(2)
-                .initialize();
-
-        jobScheduler = result.getJobScheduler();
+        // maxes out on 5 concurrent job executions
+        jobExecutorService = Executors.newFixedThreadPool(CONCURRENT_JOB_MAX);
     }
+
 
     @Override
     public String generateJobId() {
@@ -49,10 +46,11 @@ public class JobServiceJobrunrImpl implements JobService {
         }
     }
 
+    @Override
     public void submitJob() {
-        BackgroundJob.enqueue(() -> {
-            Thread.sleep(20_000);
-            System.out.println("Hello from qudotctl!!!");
+        jobExecutorService.execute(() -> {
+            System.out.println("HELLO JOB SUBMIT!");
         });
     }
+
 }
