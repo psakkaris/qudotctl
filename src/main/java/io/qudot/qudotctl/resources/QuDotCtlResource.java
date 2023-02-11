@@ -6,6 +6,7 @@ import io.qudot.qudotctl.models.QuDotJobRequest;
 import io.qudot.qudotctl.service.JobService;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
+import org.jboss.logging.Logger;
 
 import javax.inject.Inject;
 import javax.ws.rs.GET;
@@ -22,6 +23,7 @@ import java.util.Base64;
 
 @Path("/qudotctl/v1")
 public class QuDotCtlResource {
+    private static final Logger LOG = Logger.getLogger(QuDotCtlResource.class);
 
     @ConfigProperty(name = "qudotctl.version")
     String version;
@@ -49,11 +51,13 @@ public class QuDotCtlResource {
             Files.createDirectories(Paths.get(jobPath));
             String filename = getProgramFilename(jobPath, jobId);
 
+            LOG.infof("Writing program to job directory: %s", filename);
             BufferedWriter writer = new BufferedWriter(new FileWriter(filename));
             byte[] programBytes = Base64.getDecoder().decode(jobRequest.getQuantumProgramBody());
             IOUtils.write(new String(programBytes), writer);
             writer.close();
 
+            LOG.infof("Compiling job: %s, %s", jobId, filename);
             jobService.compileJob(filename, jobId);
             var qudotJob = new QuDotJob();
             qudotJob.setJobId(jobId);
