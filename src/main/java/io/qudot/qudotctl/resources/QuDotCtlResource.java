@@ -3,16 +3,14 @@ package io.qudot.qudotctl.resources;
 import io.qudot.qudotctl.models.QuDotCtlVersion;
 import io.qudot.qudotctl.models.QuDotJob;
 import io.qudot.qudotctl.models.QuDotJobRequest;
+import io.qudot.qudotctl.models.QuDotResults;
 import io.qudot.qudotctl.service.JobService;
 import org.apache.commons.io.IOUtils;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 import org.jboss.logging.Logger;
 
 import javax.inject.Inject;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.*;
 import javax.ws.rs.core.Response;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -69,6 +67,17 @@ public class QuDotCtlResource {
             e.printStackTrace();
             throw new WebApplicationException(e.getMessage());
         }
+    }
+
+    @GET
+    @Path("/jobs/{jobId}")
+    public Response getJob(@PathParam("jobId") String jobId) {
+        java.nio.file.Path jobPath = java.nio.file.Path.of(getJobPath(jobId));
+        if (!Files.exists(jobPath) || !Files.isDirectory(jobPath)) {
+            return Response.status(Response.Status.NOT_FOUND.getStatusCode(), "no such job").build();
+        }
+        QuDotResults results = jobService.getResults(jobId);
+        return Response.ok(results).build();
     }
 
 

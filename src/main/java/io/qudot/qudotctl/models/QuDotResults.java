@@ -6,9 +6,11 @@ import java.util.List;
 
 @RegisterForReflection
 public class QuDotResults {
+    public enum Status {RUNNING, FINISHED}
     private List<QuDotResult> results;
     private long numResults;
     private String jobId;
+    private Status status;
 
     public QuDotResults() { }
     public QuDotResults(List<QuDotResult> results) {
@@ -38,5 +40,13 @@ public class QuDotResults {
 
     public void setJobId(String jobId) {
         this.jobId = jobId;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 }
